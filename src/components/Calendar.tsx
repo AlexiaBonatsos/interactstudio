@@ -241,16 +241,43 @@ export default function Calendar() {
                                 }}
                                 className="w-full text-left"
                               >
-                                <p
-                                  className="text-sm md:text-[20px] font-bold leading-tight"
-                                  style={{
-                                    color: event.type
-                                      ? EVENT_COLORS[event.type]
-                                      : "#4A4540",
-                                  }}
-                                >
-                                  {event.name}
-                                </p>
+                                {(() => {
+                                  const parts = event.name.split(" - ");
+                                  if (parts.length > 1) {
+                                    return (
+                                      <>
+                                        <p
+                                          className="text-[10px] leading-tight"
+                                          style={{ color: "#A09890" }}
+                                        >
+                                          {parts[0]}
+                                        </p>
+                                        <p
+                                          className="text-sm md:text-[20px] font-bold leading-tight"
+                                          style={{
+                                            color: event.type
+                                              ? EVENT_COLORS[event.type]
+                                              : "#4A4540",
+                                          }}
+                                        >
+                                          {parts.slice(1).join(" - ")}
+                                        </p>
+                                      </>
+                                    );
+                                  }
+                                  return (
+                                    <p
+                                      className="text-sm md:text-[20px] font-bold leading-tight"
+                                      style={{
+                                        color: event.type
+                                          ? EVENT_COLORS[event.type]
+                                          : "#4A4540",
+                                      }}
+                                    >
+                                      {event.name}
+                                    </p>
+                                  );
+                                })()}
                               </button>
                             ))}
                             {dayEvents.length > 2 && (
@@ -451,12 +478,35 @@ export default function Calendar() {
                           }}
                         />
                         <div className="flex-1 min-w-0">
-                          <p
-                            className="text-sm font-bold truncate"
-                            style={{ color: textColor }}
-                          >
-                            {event.name}
-                          </p>
+                          {(() => {
+                            const parts = event.name.split(" - ");
+                            if (parts.length > 1) {
+                              return (
+                                <>
+                                  <p
+                                    className="text-[10px] truncate"
+                                    style={{ color: "#A09890" }}
+                                  >
+                                    {parts[0]}
+                                  </p>
+                                  <p
+                                    className="text-sm font-bold truncate"
+                                    style={{ color: textColor }}
+                                  >
+                                    {parts.slice(1).join(" - ")}
+                                  </p>
+                                </>
+                              );
+                            }
+                            return (
+                              <p
+                                className="text-sm font-bold truncate"
+                                style={{ color: textColor }}
+                              >
+                                {event.name}
+                              </p>
+                            );
+                          })()}
                           {event.participants && (
                             <p
                               className="text-[10px] mt-0.5 truncate"
