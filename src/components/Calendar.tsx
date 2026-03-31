@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { CalendarEvent, EVENT_COLORS, EVENT_BG_COLORS, EventType } from "@/lib/types";
+import {
+  CalendarEvent,
+  EVENT_COLORS,
+  EVENT_BG_COLORS,
+  EVENT_DOT_COLORS,
+  EventType,
+} from "@/lib/types";
 import CalendarHeader from "./CalendarHeader";
 import EventCard from "./EventCard";
 
@@ -31,12 +37,27 @@ function parseEventDate(dateStr: string): Date {
   return new Date(y, m - 1, d);
 }
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+const ALL_EVENT_TYPES: EventType[] = [
+  "Foundations",
+  "Studio",
+  "Salon",
+  "Open Studio",
+  "Writing",
+  "Live Model",
+  "Chapter",
+];
+
+const GCAL_SUBSCRIBE_URL =
+  "https://calendar.google.com/calendar/r?cid=c_05d797da846c29fda2fd6d72ebea91a4e828dc31562914050c40319074eae47b@group.calendar.google.com";
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
 
@@ -69,7 +90,10 @@ export default function Calendar() {
   const nextMonthDays = useMemo(() => {
     const remaining = 7 - (totalCells % 7);
     if (remaining === 7) return [];
-    return Array.from({ length: remaining }, (_, i) => new Date(year, month + 1, i + 1));
+    return Array.from(
+      { length: remaining },
+      (_, i) => new Date(year, month + 1, i + 1)
+    );
   }, [year, month, totalCells]);
 
   const allDays = [...prevMonthDays, ...days, ...nextMonthDays];
@@ -99,174 +123,297 @@ export default function Calendar() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <CalendarHeader
-        currentDate={currentDate}
-        onPrevMonth={() => goTo("prev")}
-        onNextMonth={() => goTo("next")}
-        onToday={() => setCurrentDate(new Date())}
-      />
+    <div className="min-h-screen" style={{ backgroundColor: "#FDF8F3" }}>
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
+        <CalendarHeader
+          currentDate={currentDate}
+          onPrevMonth={() => goTo("prev")}
+          onNextMonth={() => goTo("next")}
+          onToday={() => setCurrentDate(new Date())}
+        />
 
-      {loading ? (
-        <div className="flex items-center justify-center h-96">
-          <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="px-6 py-4">
-          {/* Weekday headers */}
-          <div className="grid grid-cols-7 mb-2">
-            {WEEKDAYS.map((d) => (
-              <div
-                key={d}
-                className="text-center text-xs font-medium text-gray-400 uppercase tracking-wider py-2"
-              >
-                {d}
-              </div>
-            ))}
+        {loading ? (
+          <div className="flex items-center justify-center h-96">
+            <div className="w-6 h-6 border-2 border-amber-200 border-t-amber-600 rounded-full animate-spin" />
           </div>
-
-          {/* Calendar grid */}
-          <div
-            className={`grid grid-cols-7 transition-all duration-150 ${
-              direction === "left"
-                ? "-translate-x-2 opacity-0"
-                : direction === "right"
-                ? "translate-x-2 opacity-0"
-                : "translate-x-0 opacity-100"
-            }`}
-          >
-            {allDays.map((day, i) => {
-              const isCurrentMonth = day.getMonth() === month;
-              const isToday = isSameDay(day, today);
-              const dayEvents = getEventsForDay(day);
-
-              return (
-                <div
-                  key={i}
-                  className={`min-h-[120px] border-t border-gray-100 p-1.5 ${
-                    !isCurrentMonth ? "bg-gray-50/50" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-center mb-1">
-                    <span
-                      className={`inline-flex items-center justify-center w-7 h-7 text-sm rounded-full ${
-                        isToday
-                          ? "bg-red-500 text-white font-semibold"
-                          : isCurrentMonth
-                          ? "text-gray-900"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      {day.getDate()}
-                    </span>
+        ) : (
+          <div className="flex gap-8 mt-6">
+            {/* Calendar grid */}
+            <div className="flex-1 min-w-0">
+              {/* Weekday headers */}
+              <div className="grid grid-cols-7 mb-1">
+                {WEEKDAYS.map((d) => (
+                  <div
+                    key={d}
+                    className="text-center text-xs font-semibold tracking-widest py-3"
+                    style={{ color: "#8B8580" }}
+                  >
+                    {d}
                   </div>
+                ))}
+              </div>
 
-                  <div className="space-y-0.5">
-                    {dayEvents.slice(0, 3).map((event) => {
-                      const color = event.type
-                        ? EVENT_COLORS[event.type]
-                        : "#9CA3AF";
+              {/* Calendar grid */}
+              <div
+                className={`grid grid-cols-7 border border-[#E8E0D8] rounded-xl overflow-hidden transition-all duration-150 ${
+                  direction === "left"
+                    ? "-translate-x-2 opacity-0"
+                    : direction === "right"
+                    ? "translate-x-2 opacity-0"
+                    : "translate-x-0 opacity-100"
+                }`}
+              >
+                {allDays.map((day, i) => {
+                  const isCurrentMonth = day.getMonth() === month;
+                  const isToday = isSameDay(day, today);
+                  const dayEvents = getEventsForDay(day);
+                  const hasEvent = dayEvents.length > 0;
+                  const firstEvent = dayEvents[0];
+
+                  const cellBg =
+                    hasEvent && firstEvent?.type
+                      ? EVENT_BG_COLORS[firstEvent.type]
+                      : isCurrentMonth
+                      ? "#FFFFFF"
+                      : "#FAF6F1";
+
+                  return (
+                    <div
+                      key={i}
+                      className={`min-h-[110px] border-r border-b border-[#E8E0D8] p-2 relative transition-all cursor-pointer hover:brightness-[0.97] ${
+                        i % 7 === 6 ? "border-r-0" : ""
+                      } ${
+                        i >= allDays.length - 7 ? "border-b-0" : ""
+                      }`}
+                      style={{ backgroundColor: cellBg }}
+                      onClick={() => {
+                        if (hasEvent) setSelectedEvent(firstEvent);
+                      }}
+                    >
+                      <span
+                        className={`text-sm font-medium ${
+                          isToday
+                            ? "inline-flex items-center justify-center w-7 h-7 rounded-full text-white"
+                            : ""
+                        } ${
+                          !isCurrentMonth
+                            ? "text-[#C8C0B8]"
+                            : hasEvent
+                            ? "text-[#4A4540]"
+                            : "text-[#6B6560]"
+                        }`}
+                        style={
+                          isToday
+                            ? { backgroundColor: "#C47A5A" }
+                            : undefined
+                        }
+                      >
+                        {day.getDate()}
+                      </span>
+
+                      {hasEvent && (
+                        <div className="mt-1.5 space-y-1">
+                          {dayEvents.slice(0, 2).map((event) => (
+                            <button
+                              key={event.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedEvent(event);
+                              }}
+                              className="w-full text-left"
+                            >
+                              <p
+                                className="text-[11px] font-bold leading-tight"
+                                style={{
+                                  color: event.type
+                                    ? EVENT_COLORS[event.type]
+                                    : "#4A4540",
+                                }}
+                              >
+                                {event.name}
+                              </p>
+                            </button>
+                          ))}
+                          {dayEvents.length > 2 && (
+                            <p className="text-[10px] font-medium text-[#9B9590]">
+                              +{dayEvents.length - 2} more
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Mobile list view */}
+              <div className="mt-8 md:hidden">
+                <h2
+                  className="text-lg font-bold mb-3"
+                  style={{ color: "#2D2A26" }}
+                >
+                  Upcoming Events
+                </h2>
+                <div className="space-y-2">
+                  {events
+                    .filter((e) => {
+                      if (!e.date.start) return false;
+                      const d = parseEventDate(e.date.start);
+                      return (
+                        d >= new Date(year, month, 1) &&
+                        d <= new Date(year, month + 1, 0)
+                      );
+                    })
+                    .map((event) => {
                       const bgColor = event.type
                         ? EVENT_BG_COLORS[event.type]
-                        : "rgba(156,163,175,0.15)";
+                        : "#F5F0EB";
+                      const textColor = event.type
+                        ? EVENT_COLORS[event.type]
+                        : "#4A4540";
 
                       return (
                         <button
                           key={event.id}
                           onClick={() => setSelectedEvent(event)}
-                          className="w-full text-left px-1.5 py-0.5 rounded-md text-[11px] font-medium truncate transition-all hover:opacity-80 active:scale-[0.98]"
-                          style={{
-                            color,
-                            backgroundColor: bgColor,
-                          }}
+                          className="w-full flex items-center gap-3 p-4 rounded-xl transition-all hover:scale-[0.99] active:scale-[0.97] text-left"
+                          style={{ backgroundColor: bgColor }}
                         >
-                          {event.date.start.includes("T") && (
-                            <span className="opacity-70 mr-0.5">
-                              {new Date(event.date.start).toLocaleTimeString(
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-sm font-bold truncate"
+                              style={{ color: textColor }}
+                            >
+                              {event.name}
+                            </p>
+                            <p className="text-xs mt-0.5" style={{ color: "#8B8580" }}>
+                              {new Date(event.date.start).toLocaleDateString(
                                 "en-US",
-                                { hour: "numeric", minute: "2-digit", hour12: true }
-                              ).replace(" ", "")}{" "}
+                                {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                              {event.date.start.includes("T") &&
+                                ` at ${new Date(
+                                  event.date.start
+                                ).toLocaleTimeString("en-US", {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                })}`}
+                            </p>
+                          </div>
+                          {event.type && (
+                            <span
+                              className="text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0"
+                              style={{
+                                color: textColor,
+                                backgroundColor: `${bgColor}`,
+                                border: `1px solid ${textColor}30`,
+                              }}
+                            >
+                              {event.type}
                             </span>
                           )}
-                          {event.name}
                         </button>
                       );
                     })}
-                    {dayEvents.length > 3 && (
-                      <p className="text-[10px] text-gray-400 text-center">
-                        +{dayEvents.length - 3} more
-                      </p>
-                    )}
-                  </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </div>
 
-          {/* Mobile list view */}
-          <div className="mt-8 md:hidden">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Upcoming Events</h2>
-            <div className="space-y-2">
-              {events
-                .filter((e) => {
-                  if (!e.date.start) return false;
-                  const d = parseEventDate(e.date.start);
-                  return d >= new Date(year, month, 1) && d <= new Date(year, month + 1, 0);
-                })
-                .map((event) => {
-                  const color = event.type
-                    ? EVENT_COLORS[event.type]
-                    : "#9CA3AF";
-
-                  return (
-                    <button
-                      key={event.id}
-                      onClick={() => setSelectedEvent(event)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                    >
+            {/* Sidebar */}
+            <div className="hidden md:block w-56 shrink-0">
+              <div
+                className="rounded-xl p-5 sticky top-8"
+                style={{ backgroundColor: "#FFFFFF", border: "1px solid #E8E0D8" }}
+              >
+                <h3
+                  className="text-xs font-bold uppercase tracking-widest mb-4"
+                  style={{ color: "#8B8580" }}
+                >
+                  Event Type
+                </h3>
+                <div className="space-y-3">
+                  {ALL_EVENT_TYPES.map((type) => (
+                    <div key={type} className="flex items-center gap-2.5">
                       <div
-                        className="w-1 h-10 rounded-full shrink-0"
-                        style={{ backgroundColor: color }}
+                        className="w-4 h-4 rounded-full shrink-0"
+                        style={{ backgroundColor: EVENT_DOT_COLORS[type] }}
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {event.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(event.date.start).toLocaleDateString("en-US", {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                          {event.date.start.includes("T") &&
-                            ` at ${new Date(event.date.start).toLocaleTimeString(
-                              "en-US",
-                              { hour: "numeric", minute: "2-digit" }
-                            )}`}
-                        </p>
-                      </div>
-                      {event.type && (
-                        <span
-                          className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0"
-                          style={{ color, backgroundColor: `${color}15` }}
-                        >
-                          {event.type}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: "#4A4540" }}
+                      >
+                        {type}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  className="my-5"
+                  style={{ borderTop: "1px solid #E8E0D8" }}
+                />
+
+                <a
+                  href={GCAL_SUBSCRIBE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all hover:brightness-[0.95] active:scale-[0.98]"
+                  style={{
+                    backgroundColor: "#2D2A26",
+                    color: "#FDF8F3",
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
+                    <rect
+                      x="2"
+                      y="3"
+                      width="14"
+                      height="13"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path d="M2 7H16" stroke="currentColor" strokeWidth="1.5" />
+                    <path
+                      d="M6 1V4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M12 1V4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  Subscribe
+                </a>
+
+                <p
+                  className="text-[10px] text-center mt-3 leading-relaxed"
+                  style={{ color: "#A09890" }}
+                >
+                  Interact Studio
+                  <br />
+                  2751 21st Street, SF
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {selectedEvent && (
-        <EventCard
-          event={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-        />
-      )}
+        {selectedEvent && (
+          <EventCard
+            event={selectedEvent}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarEvent, EVENT_COLORS } from "@/lib/types";
+import { CalendarEvent, EVENT_COLORS, EVENT_BG_COLORS } from "@/lib/types";
 
 interface EventCardProps {
   event: CalendarEvent;
@@ -27,43 +27,54 @@ function formatDate(dateStr: string): string {
 }
 
 export default function EventCard({ event, onClose }: EventCardProps) {
-  const accentColor = event.type
-    ? EVENT_COLORS[event.type]
-    : "#9CA3AF";
-
+  const accentColor = event.type ? EVENT_COLORS[event.type] : "#6B6560";
+  const bgColor = event.type ? EVENT_BG_COLORS[event.type] : "#F5F0EB";
   const hasTime = event.date.start.includes("T");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="h-1.5" style={{ backgroundColor: accentColor }} />
+      <div
+        className="absolute inset-0 backdrop-blur-sm"
+        style={{ backgroundColor: "rgba(45,42,38,0.3)" }}
+        onClick={onClose}
+      />
+      <div
+        className="relative rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in"
+        style={{ backgroundColor: "#FDF8F3" }}
+      >
+        <div className="h-2 rounded-t-2xl" style={{ backgroundColor: bgColor }} />
 
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               {event.type && (
                 <span
-                  className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full mb-2"
+                  className="inline-block px-3 py-1 text-xs font-bold rounded-full mb-2 uppercase tracking-wide"
                   style={{
                     color: accentColor,
-                    backgroundColor: `${accentColor}15`,
+                    backgroundColor: bgColor,
                   }}
                 >
                   {event.type}
                 </span>
               )}
-              <h2 className="text-xl font-semibold text-gray-900">{event.name}</h2>
+              <h2
+                className="text-xl font-black"
+                style={{ color: "#2D2A26" }}
+              >
+                {event.name}
+              </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: "#A09890" }}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
                   d="M6 6L14 14M14 6L6 14"
                   stroke="currentColor"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                   strokeLinecap="round"
                 />
               </svg>
@@ -73,7 +84,8 @@ export default function EventCard({ event, onClose }: EventCardProps) {
           <div className="space-y-3 text-sm">
             <div className="flex items-start gap-3">
               <svg
-                className="w-4 h-4 mt-0.5 text-gray-400 shrink-0"
+                className="w-4 h-4 mt-0.5 shrink-0"
+                style={{ color: "#A09890" }}
                 viewBox="0 0 16 16"
                 fill="none"
               >
@@ -81,9 +93,11 @@ export default function EventCard({ event, onClose }: EventCardProps) {
                 <path d="M8 4.5V8L10.5 10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
               <div>
-                <p className="text-gray-900 font-medium">{formatDate(event.date.start)}</p>
+                <p className="font-semibold" style={{ color: "#2D2A26" }}>
+                  {formatDate(event.date.start)}
+                </p>
                 {hasTime && (
-                  <p className="text-gray-500">
+                  <p style={{ color: "#8B8580" }}>
                     {formatTime(event.date.start)}
                     {event.date.end && ` \u2013 ${formatTime(event.date.end)}`}
                   </p>
@@ -94,7 +108,8 @@ export default function EventCard({ event, onClose }: EventCardProps) {
             {event.location && (
               <div className="flex items-start gap-3">
                 <svg
-                  className="w-4 h-4 mt-0.5 text-gray-400 shrink-0"
+                  className="w-4 h-4 mt-0.5 shrink-0"
+                  style={{ color: "#A09890" }}
                   viewBox="0 0 16 16"
                   fill="none"
                 >
@@ -105,27 +120,31 @@ export default function EventCard({ event, onClose }: EventCardProps) {
                   />
                   <circle cx="8" cy="6.5" r="1.5" stroke="currentColor" strokeWidth="1.2" />
                 </svg>
-                <p className="text-gray-600">{event.location}</p>
+                <p style={{ color: "#6B6560" }}>{event.location}</p>
               </div>
             )}
 
             {event.description && (
               <div className="flex items-start gap-3">
                 <svg
-                  className="w-4 h-4 mt-0.5 text-gray-400 shrink-0"
+                  className="w-4 h-4 mt-0.5 shrink-0"
+                  style={{ color: "#A09890" }}
                   viewBox="0 0 16 16"
                   fill="none"
                 >
                   <path d="M3 4H13M3 8H10M3 12H13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
-                <p className="text-gray-600 leading-relaxed">{event.description}</p>
+                <p className="leading-relaxed" style={{ color: "#6B6560" }}>
+                  {event.description}
+                </p>
               </div>
             )}
 
             {event.participants && (
               <div className="flex items-start gap-3">
                 <svg
-                  className="w-4 h-4 mt-0.5 text-gray-400 shrink-0"
+                  className="w-4 h-4 mt-0.5 shrink-0"
+                  style={{ color: "#A09890" }}
                   viewBox="0 0 16 16"
                   fill="none"
                 >
@@ -137,7 +156,7 @@ export default function EventCard({ event, onClose }: EventCardProps) {
                     strokeLinecap="round"
                   />
                 </svg>
-                <p className="text-gray-600">{event.participants}</p>
+                <p style={{ color: "#6B6560" }}>{event.participants}</p>
               </div>
             )}
 
@@ -146,7 +165,11 @@ export default function EventCard({ event, onClose }: EventCardProps) {
                 {event.audience.map((a) => (
                   <span
                     key={a}
-                    className="px-2 py-0.5 text-xs font-medium rounded-md bg-gray-100 text-gray-600"
+                    className="px-2.5 py-0.5 text-xs font-semibold rounded-md"
+                    style={{
+                      backgroundColor: "#F0EBE5",
+                      color: "#6B6560",
+                    }}
                   >
                     {a}
                   </span>
@@ -160,8 +183,8 @@ export default function EventCard({ event, onClose }: EventCardProps) {
               href={event.lumaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-              style={{ backgroundColor: accentColor }}
+              className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold uppercase tracking-wide text-white transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{ backgroundColor: "#2D2A26" }}
             >
               RSVP on Luma
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

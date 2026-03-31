@@ -25,21 +25,31 @@ export type EventType =
   | "Chapter";
 
 export const EVENT_COLORS: Record<EventType, string> = {
-  Foundations: "#F472B6",
-  Studio: "#60A5FA",
-  Salon: "#A78BFA",
-  "Open Studio": "#9CA3AF",
-  Writing: "#FBBF24",
-  "Live Model": "#34D399",
-  Chapter: "#4ADE80",
+  Foundations: "#9B2C5E",
+  Studio: "#2C5E9B",
+  Salon: "#5E2C9B",
+  "Open Studio": "#9B5E2C",
+  Writing: "#7A6B1E",
+  "Live Model": "#2C7A5E",
+  Chapter: "#2C7A2C",
 };
 
 export const EVENT_BG_COLORS: Record<EventType, string> = {
-  Foundations: "rgba(244,114,182,0.15)",
-  Studio: "rgba(96,165,250,0.15)",
-  Salon: "rgba(167,139,250,0.15)",
-  "Open Studio": "rgba(156,163,175,0.15)",
-  Writing: "rgba(251,191,36,0.15)",
-  "Live Model": "rgba(52,211,153,0.15)",
-  Chapter: "rgba(74,222,128,0.15)",
+  Foundations: "#F9D5E5",
+  Studio: "#D5E5F9",
+  Salon: "#E5D5F9",
+  "Open Studio": "#F9E5D5",
+  Writing: "#F9F0D5",
+  "Live Model": "#D5F9E5",
+  Chapter: "#D5F9D5",
+};
+
+export const EVENT_DOT_COLORS: Record<EventType, string> = {
+  Foundations: "#E8A0C0",
+  Studio: "#A0C0E8",
+  Salon: "#C0A0E8",
+  "Open Studio": "#E8C0A0",
+  Writing: "#E8DCA0",
+  "Live Model": "#A0E8C0",
+  Chapter: "#A0E8A0",
 };
