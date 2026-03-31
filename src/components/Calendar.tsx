@@ -428,9 +428,6 @@ export default function Calendar() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {upcomingEvents.map((event) => {
-                    const bgColor = event.type
-                      ? EVENT_BG_COLORS[event.type]
-                      : "#F5F0EB";
                     const textColor = event.type
                       ? EVENT_COLORS[event.type]
                       : "#4A4540";
@@ -439,8 +436,11 @@ export default function Calendar() {
                       <button
                         key={event.id}
                         onClick={() => setSelectedEvent(event)}
-                        className="flex items-start gap-3 p-4 rounded-xl transition-all hover:scale-[0.99] active:scale-[0.97] text-left"
-                        style={{ backgroundColor: bgColor }}
+                        className="flex items-start gap-3 p-4 rounded-xl transition-all hover:scale-[0.99] active:scale-[0.97] text-left border"
+                        style={{
+                          backgroundColor: "#FFFFFF",
+                          borderColor: "#E8E0D8",
+                        }}
                       >
                         <div
                           className="w-1 shrink-0 rounded-full self-stretch"
@@ -457,6 +457,14 @@ export default function Calendar() {
                           >
                             {event.name}
                           </p>
+                          {event.participants && (
+                            <p
+                              className="text-[10px] mt-0.5 truncate"
+                              style={{ color: "#A09890" }}
+                            >
+                              {event.participants}
+                            </p>
+                          )}
                           <p
                             className="text-xs mt-1 font-medium"
                             style={{ color: "#8B8580" }}
