@@ -200,7 +200,7 @@ export default function Calendar() {
                       <div
                         key={i}
                         className={`
-                          min-h-[52px] md:min-h-[110px]
+                          min-h-[52px] md:min-h-[130px]
                           border-r border-b border-[#E8E0D8]
                           p-1 md:p-2
                           relative transition-all
@@ -247,7 +247,7 @@ export default function Calendar() {
                                 className="w-full text-left"
                               >
                                 <p
-                                  className="text-[11px] font-bold leading-tight"
+                                  className="text-sm md:text-[20px] font-bold leading-tight"
                                   style={{
                                     color: event.type
                                       ? EVENT_COLORS[event.type]
