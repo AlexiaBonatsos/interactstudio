@@ -195,9 +195,9 @@ export default function Calendar() {
                       <div
                         key={i}
                         className={`
-                          min-h-[52px] md:min-h-[130px]
+                          min-h-[52px] md:min-h-[160px]
                           border-r border-b border-[#E8E0D8]
-                          p-1 md:p-2
+                          p-1 md:p-3
                           relative transition-all
                           ${hasEvent ? "cursor-pointer active:scale-[0.97]" : ""}
                           ${i % 7 === 6 ? "border-r-0" : ""}
@@ -253,7 +253,7 @@ export default function Calendar() {
                                           {parts[0]}
                                         </p>
                                         <p
-                                          className="text-sm md:text-[20px] font-bold leading-tight"
+                                          className="text-sm md:text-[20px] font-bold leading-snug"
                                           style={{
                                             color: event.type
                                               ? EVENT_COLORS[event.type]
@@ -267,7 +267,7 @@ export default function Calendar() {
                                   }
                                   return (
                                     <p
-                                      className="text-sm md:text-[20px] font-bold leading-tight"
+                                      className="text-sm md:text-[20px] font-bold leading-snug"
                                       style={{
                                         color: event.type
                                           ? EVENT_COLORS[event.type]
