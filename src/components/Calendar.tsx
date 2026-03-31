@@ -189,12 +189,7 @@ export default function Calendar() {
                     const hasEvent = dayEvents.length > 0;
                     const firstEvent = dayEvents[0];
 
-                    const cellBg =
-                      hasEvent && firstEvent?.type
-                        ? EVENT_BG_COLORS[firstEvent.type]
-                        : isCurrentMonth
-                        ? "#FFFFFF"
-                        : "#FAF6F1";
+                    const cellBg = isCurrentMonth ? "#FFFFFF" : "#FAF6F1";
 
                     return (
                       <div
