@@ -16,6 +16,18 @@ export const metadata: Metadata = {
   title: "Interact Studio",
   description:
     "Interact Studio @ 2751 21st Street, San Francisco. Calendar of events for Fellows and Tenants.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Interact Studio",
+  },
+  themeColor: "#FDF8F3",
 };
 
 export default function RootLayout({
