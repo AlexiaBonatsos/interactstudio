@@ -41,6 +41,14 @@ function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+function splitEventName(name: string): [string, string] | null {
+  const dashIdx = name.indexOf(" - ");
+  if (dashIdx !== -1) return [name.slice(0, dashIdx), name.slice(dashIdx + 3)];
+  const colonIdx = name.indexOf(": ");
+  if (colonIdx !== -1) return [name.slice(0, colonIdx), name.slice(colonIdx + 2)];
+  return null;
+}
+
 const WEEKDAYS_FULL = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEKDAYS_SHORT = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -244,7 +252,7 @@ export default function Calendar() {
                               const nameColor = event.type
                                 ? EVENT_COLORS[event.type]
                                 : "#4A4540";
-                              const parts = event.name.split(" - ");
+                              const nameParts = splitEventName(event.name);
 
                               return (
                                 <EventWrapper
@@ -256,19 +264,19 @@ export default function Calendar() {
                                   }}
                                   className="w-full text-left block hover:underline"
                                 >
-                                  {parts.length > 1 ? (
+                                  {nameParts ? (
                                     <>
                                       <p
                                         className="text-[10px] leading-tight"
                                         style={{ color: "#A09890" }}
                                       >
-                                        {parts[0]}
+                                        {nameParts[0]}
                                       </p>
                                       <p
                                         className="text-sm md:text-[20px] font-bold leading-snug"
                                         style={{ color: nameColor }}
                                       >
-                                        {parts.slice(1).join(" - ")}
+                                        {nameParts[1]}
                                       </p>
                                     </>
                                   ) : (
@@ -492,21 +500,21 @@ export default function Calendar() {
                         />
                         <div className="flex-1 min-w-0">
                           {(() => {
-                            const parts = event.name.split(" - ");
-                            if (parts.length > 1) {
+                            const nameParts = splitEventName(event.name);
+                            if (nameParts) {
                               return (
                                 <>
                                   <p
                                     className="text-[10px] truncate"
                                     style={{ color: "#A09890" }}
                                   >
-                                    {parts[0]}
+                                    {nameParts[0]}
                                   </p>
                                   <p
                                     className="text-sm font-bold truncate"
                                     style={{ color: textColor }}
                                   >
-                                    {parts.slice(1).join(" - ")}
+                                    {nameParts[1]}
                                   </p>
                                 </>
                               );
