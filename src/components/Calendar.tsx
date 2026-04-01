@@ -195,7 +195,7 @@ export default function Calendar() {
                       <div
                         key={i}
                         className={`
-                          min-h-[52px] md:min-h-[200px]
+                          min-h-[52px] md:min-h-[260px]
                           border-r border-b border-[#E8E0D8]
                           p-1 md:p-3
                           relative transition-all
