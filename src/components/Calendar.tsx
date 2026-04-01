@@ -273,7 +273,7 @@ export default function Calendar() {
                                         {nameParts[0]}
                                       </p>
                                       <p
-                                        className="text-sm md:text-[20px] font-bold leading-snug"
+                                        className="text-sm md:text-[16px] font-bold leading-snug break-words"
                                         style={{ color: nameColor }}
                                       >
                                         {nameParts[1]}
@@ -281,7 +281,7 @@ export default function Calendar() {
                                     </>
                                   ) : (
                                     <p
-                                      className="text-sm md:text-[20px] font-bold leading-snug"
+                                      className="text-sm md:text-[16px] font-bold leading-snug break-words"
                                       style={{ color: nameColor }}
                                     >
                                       {event.name}
