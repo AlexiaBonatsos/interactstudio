@@ -232,54 +232,56 @@ export default function Calendar() {
                         {/* Desktop: show event names */}
                         {hasEvent && (
                           <div className="hidden md:block mt-1.5 space-y-1">
-                            {dayEvents.slice(0, 2).map((event) => (
-                              <button
-                                key={event.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedEvent(event);
-                                }}
-                                className="w-full text-left"
-                              >
-                                {(() => {
-                                  const parts = event.name.split(" - ");
-                                  if (parts.length > 1) {
-                                    return (
-                                      <>
-                                        <p
-                                          className="text-[10px] leading-tight"
-                                          style={{ color: "#A09890" }}
-                                        >
-                                          {parts[0]}
-                                        </p>
-                                        <p
-                                          className="text-sm md:text-[20px] font-bold leading-snug"
-                                          style={{
-                                            color: event.type
-                                              ? EVENT_COLORS[event.type]
-                                              : "#4A4540",
-                                          }}
-                                        >
-                                          {parts.slice(1).join(" - ")}
-                                        </p>
-                                      </>
-                                    );
+                            {dayEvents.slice(0, 2).map((event) => {
+                              const EventWrapper = event.lumaUrl ? "a" : "button";
+                              const wrapperProps = event.lumaUrl
+                                ? {
+                                    href: event.lumaUrl,
+                                    target: "_blank" as const,
+                                    rel: "noopener noreferrer",
                                   }
-                                  return (
+                                : {};
+                              const nameColor = event.type
+                                ? EVENT_COLORS[event.type]
+                                : "#4A4540";
+                              const parts = event.name.split(" - ");
+
+                              return (
+                                <EventWrapper
+                                  key={event.id}
+                                  {...wrapperProps}
+                                  onClick={(e: React.MouseEvent) => {
+                                    e.stopPropagation();
+                                    if (!event.lumaUrl) setSelectedEvent(event);
+                                  }}
+                                  className="w-full text-left block hover:underline"
+                                >
+                                  {parts.length > 1 ? (
+                                    <>
+                                      <p
+                                        className="text-[10px] leading-tight"
+                                        style={{ color: "#A09890" }}
+                                      >
+                                        {parts[0]}
+                                      </p>
+                                      <p
+                                        className="text-sm md:text-[20px] font-bold leading-snug"
+                                        style={{ color: nameColor }}
+                                      >
+                                        {parts.slice(1).join(" - ")}
+                                      </p>
+                                    </>
+                                  ) : (
                                     <p
                                       className="text-sm md:text-[20px] font-bold leading-snug"
-                                      style={{
-                                        color: event.type
-                                          ? EVENT_COLORS[event.type]
-                                          : "#4A4540",
-                                      }}
+                                      style={{ color: nameColor }}
                                     >
                                       {event.name}
                                     </p>
-                                  );
-                                })()}
-                              </button>
-                            ))}
+                                  )}
+                                </EventWrapper>
+                              );
+                            })}
                             {dayEvents.length > 2 && (
                               <p className="text-[10px] font-medium text-[#9B9590]">
                                 +{dayEvents.length - 2} more
@@ -459,10 +461,21 @@ export default function Calendar() {
                       ? EVENT_COLORS[event.type]
                       : "#4A4540";
 
+                    const CardTag = event.lumaUrl ? "a" : "button";
+                    const cardProps = event.lumaUrl
+                      ? {
+                          href: event.lumaUrl,
+                          target: "_blank" as const,
+                          rel: "noopener noreferrer",
+                        }
+                      : {
+                          onClick: () => setSelectedEvent(event),
+                        };
+
                     return (
-                      <button
+                      <CardTag
                         key={event.id}
-                        onClick={() => setSelectedEvent(event)}
+                        {...(cardProps as any)}
                         className="flex items-start gap-3 p-4 rounded-xl transition-all hover:scale-[0.99] active:scale-[0.97] text-left border"
                         style={{
                           backgroundColor: "#FFFFFF",
@@ -555,7 +568,7 @@ export default function Calendar() {
                             {event.type}
                           </span>
                         )}
-                      </button>
+                      </CardTag>
                     );
                   })}
                 </div>
