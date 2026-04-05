@@ -1,5 +1,5 @@
 "use client";
-
+// v2 - show all events per day
 import { useState, useEffect, useMemo } from "react";
 import {
   CalendarEvent,
