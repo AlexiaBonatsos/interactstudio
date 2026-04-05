@@ -4,30 +4,42 @@ const NOTION_API_KEY = process.env.NOTION_API_KEY!;
 const DATABASE_ID = process.env.NOTION_DATABASE_ID!;
 
 export async function getEvents(): Promise<CalendarEvent[]> {
-  const res = await fetch(
-    `https://api.notion.com/v1/databases/${DATABASE_ID}/query`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${NOTION_API_KEY}`,
-        "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28",
-      },
-      body: JSON.stringify({
-        sorts: [{ property: "Date", direction: "ascending" }],
-      }),
-      next: { revalidate: 60 },
-    }
-  );
+  const allResults: any[] = [];
+  let hasMore = true;
+  let startCursor: string | undefined;
 
-  if (!res.ok) {
-    console.error("Notion API error:", await res.text());
-    return [];
+  while (hasMore) {
+    const body: any = {
+      sorts: [{ property: "Date", direction: "ascending" }],
+    };
+    if (startCursor) body.start_cursor = startCursor;
+
+    const res = await fetch(
+      `https://api.notion.com/v1/databases/${DATABASE_ID}/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${NOTION_API_KEY}`,
+          "Content-Type": "application/json",
+          "Notion-Version": "2022-06-28",
+        },
+        body: JSON.stringify(body),
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Notion API error:", await res.text());
+      return [];
+    }
+
+    const data = await res.json();
+    allResults.push(...data.results);
+    hasMore = data.has_more;
+    startCursor = data.next_cursor;
   }
 
-  const data = await res.json();
-
-  return data.results.map((page: any) => {
+  return allResults.map((page: any) => {
     const props = page.properties;
 
     return {
