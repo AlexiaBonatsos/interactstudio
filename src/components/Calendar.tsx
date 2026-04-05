@@ -113,9 +113,9 @@ export default function Calendar() {
   function getEventsForDay(day: Date): CalendarEvent[] {
     return events.filter((e) => {
       if (!e.date.start) return false;
-      const start = parseEventDate(e.date.start);
+      const start = startOfDay(parseEventDate(e.date.start));
       if (e.date.end) {
-        const end = parseEventDate(e.date.end);
+        const end = startOfDay(parseEventDate(e.date.end));
         return day >= start && day <= end;
       }
       return isSameDay(start, day);
