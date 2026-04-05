@@ -240,7 +240,7 @@ export default function Calendar() {
                         {/* Desktop: show event names */}
                         {hasEvent && (
                           <div className="hidden md:block mt-1.5 space-y-1">
-                            {dayEvents.slice(0, 2).map((event) => {
+                            {dayEvents.map((event) => {
                               const EventWrapper = event.lumaUrl ? "a" : "button";
                               const wrapperProps = event.lumaUrl
                                 ? {
@@ -290,28 +290,48 @@ export default function Calendar() {
                                 </EventWrapper>
                               );
                             })}
-                            {dayEvents.length > 2 && (
-                              <p className="text-[10px] font-medium text-[#9B9590]">
-                                +{dayEvents.length - 2} more
-                              </p>
-                            )}
                           </div>
                         )}
 
-                        {/* Mobile: show colored dots */}
+                        {/* Mobile: show compact event names */}
                         {hasEvent && (
-                          <div className="flex gap-0.5 mt-1 md:hidden justify-center">
-                            {dayEvents.slice(0, 3).map((event, idx) => (
-                              <div
-                                key={idx}
-                                className="w-1.5 h-1.5 rounded-full"
-                                style={{
-                                  backgroundColor: event.type
-                                    ? EVENT_DOT_COLORS[event.type]
-                                    : "#A09890",
-                                }}
-                              />
-                            ))}
+                          <div className="md:hidden mt-1 space-y-0.5">
+                            {dayEvents.map((event, idx) => {
+                              const nameColor = event.type
+                                ? EVENT_COLORS[event.type]
+                                : "#4A4540";
+                              const nameParts = splitEventName(event.name);
+                              const title = nameParts ? nameParts[1] : event.name;
+                              return (
+                                <button
+                                  key={idx}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (event.lumaUrl) {
+                                      window.open(event.lumaUrl, "_blank");
+                                    } else {
+                                      setSelectedEvent(event);
+                                    }
+                                  }}
+                                  className="w-full text-left flex items-center gap-1"
+                                >
+                                  <div
+                                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                                    style={{
+                                      backgroundColor: event.type
+                                        ? EVENT_DOT_COLORS[event.type]
+                                        : "#A09890",
+                                    }}
+                                  />
+                                  <p
+                                    className="text-[9px] font-semibold leading-tight truncate"
+                                    style={{ color: nameColor }}
+                                  >
+                                    {title}
+                                  </p>
+                                </button>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
