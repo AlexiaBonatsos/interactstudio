@@ -65,7 +65,7 @@ const ALL_EVENT_TYPES: EventType[] = [
 const GCAL_SUBSCRIBE_URL =
   "https://calendar.google.com/calendar/r?cid=c_05d797da846c29fda2fd6d72ebea91a4e828dc31562914050c40319074eae47b@group.calendar.google.com";
 
-export default function Calendar() {
+export default function Calendar({ publicOnly = false }: { publicOnly?: boolean } = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -73,7 +73,8 @@ export default function Calendar() {
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
 
   useEffect(() => {
-    fetch("/api/events")
+    const url = publicOnly ? "/api/events?public=true" : "/api/events";
+    fetch(url)
       .then((r) => r.json())
       .then((data) => {
         setEvents(data);
